@@ -1,0 +1,38 @@
+.icon-sort-categories { background-image: url('../images/sort.gif'); }
+.sort-icon {
+    cursor : pointer;
+    margin-right : 5px;
+}
+.sort-icon-d {
+    cursor : default;
+    margin-right : 5px;
+}
+div.listing ul {
+    margin : 0px;
+    padding : 0px;
+}
+div.listing ul li {
+    padding-left : 18px;
+    background-image : url('../images/tree.gif');
+    background-repeat : no-repeat;
+    line-height : 20px;
+}
+div.listing ul li.tree_end {
+    background-image : url('../images/tree_end.gif');
+}
+.actions-bar-top, 
+.actions-bar-bottom { 
+    display: block;
+    margin-top : 5px;
+    margin-bottom : 5px;
+}
+.actions-bar-top {
+}
+/*
+button {
+    width : 55px;
+    height : 25px;
+    color : white;
+    font-weight : bold;
+}
+*/

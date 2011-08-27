@@ -1,0 +1,237 @@
+<mt:setvarblock name="page_title"><__trans phrase="Sort [_1]" params="<mt:var name="sort_obj">"></mt:setvarblock>
+<mt:setvarblock name="html_head" append="1">
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>plugins/SortCatFld/css/styles.css" />
+</mt:setvarblock>
+<mt:setvar name="position_actions_bottom" value="1">
+<mt:setvar name="position_actions_top" value="1">
+<mt:setvartemplate name="action_buttons">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Save Changes">"
+        class="primary-button"
+        ><__trans phrase="Save Changes"></button>
+</mt:setvartemplate>
+
+<mt:include name="include/header.tmpl">
+
+<mt:if name="sort_html">
+<script type="text/javascript">
+//<![CDATA[
+function sort_category(imgElm, mode) {
+    var i, j, pos, dstElm, srcElm, lastElm, topElm;
+    var elm = imgElm.parentNode;
+    var cat_id = Number(elm.id.substr(3));
+    var parent = elm.parentNode;
+    
+    var li_list = new Array();
+    var nodes = parent.childNodes;
+    for (i = 0, j = 0; i < parent.childNodes.length; i++) {
+        if (nodes[i].nodeName == 'LI') {
+            li_list[j] = nodes[i];
+            j++;
+        }
+    }
+
+    pos = search();
+    if (mode == 'up') {
+        if (li_list[0].id == elm.id) {
+            return false;
+        }
+        srcElm = li_list[pos];
+        dstElm = li_list[pos - 1];
+        sort_category_sub(srcElm, dstElm);
+        if (pos == 1) {
+            btn_change(srcElm, 'u', false);
+            btn_change(dstElm, 'u', true);
+        }
+        if (pos == li_list.length - 1) {
+            btn_change(srcElm, 'd', true);
+            btn_change(dstElm, 'd', false);
+            srcElm.className = '';
+            dstElm.className = 'tree_end';
+        }
+    }
+    else if (mode == 'down') {
+        if (li_list[li_list.length - 1].id == elm.id) {
+            return false;
+        }
+        dstElm = li_list[pos];
+        srcElm = li_list[pos + 1];
+        sort_category_sub(srcElm, dstElm);
+        if (pos == 0) {
+            btn_change(srcElm, 'u', false);
+            btn_change(dstElm, 'u', true);
+        }
+        if (pos + 1 == li_list.length - 1) {
+            btn_change(srcElm, 'd', true);
+            btn_change(dstElm, 'd', false);
+            srcElm.className = '';
+            dstElm.className = 'tree_end';
+        }
+    }
+    else if (mode == 'top') {
+        if (li_list[0].id == elm.id) {
+            return false;
+        }
+        srcElm = elm;
+        dstElm = li_list[0];
+        lastElm = li_list[li_list.length - 2];
+        sort_category_sub(srcElm, dstElm);
+        btn_change(srcElm, 'u', false);
+        btn_change(dstElm, 'u', true);
+        if (pos == li_list.length - 1) {
+            srcElm.className = '';
+            lastElm.className = 'tree_end';
+            btn_change(srcElm, 'd', true);
+            btn_change(lastElm, 'd', false);
+        }
+    }
+    else if (mode == 'bottom') {
+        if (li_list[li_list.length - 1].id == elm.id) {
+            return false;
+        }
+        lastElm = li_list[li_list.length - 1];
+        parent.removeChild(elm);
+        parent.appendChild(elm);
+        lastElm.className = '';
+        elm.className = 'tree_end';
+        btn_change(elm, 'd', false);
+        btn_change(lastElm, 'd', true);
+        if (pos == 0) {
+            topElm = li_list[1];
+            btn_change(elm, 'u', true);
+            btn_change(topElm, 'u', false);
+        }
+    }
+    return false;
+
+    function search() {
+        for (var i = 0; i < li_list.length; i++) {
+            if (li_list[i].id == elm.id) {
+                return i;
+            }
+        }
+    }
+}
+
+function sort_category_sub(srcElm, dstElm) {
+    srcElm.parentNode.removeChild(srcElm);
+    dstElm.parentNode.insertBefore(srcElm, dstElm);
+}
+
+function btn_change(elm, ud, enable) {
+    var imgElm1, imgElm2;
+
+    if (ud == 'u') {
+        imgElm1 = document.getElementById(elm.id + 'u');
+        imgElm2 = document.getElementById(elm.id + 't');
+    }
+    else {
+        imgElm1 = document.getElementById(elm.id + 'd');
+        imgElm2 = document.getElementById(elm.id + 'b');
+    }
+//    alert('id = ' + imgElm1.id + ', src = ' + imgElm1.src);
+    if (enable) {
+        imgElm1.src = imgElm1.src.replace(/(.*)\/(.*?)_d\.gif$/, "$1/$2.gif");
+        imgElm2.src = imgElm2.src.replace(/(.*)\/(.*?)_d\.gif$/, "$1/$2.gif");
+        imgElm1.className = 'sort-icon';
+        imgElm2.className = 'sort-icon';
+        if (ud == 'u') {
+            imgElm1.onclick = function() { return sort_category(this, 'up'); };
+            imgElm2.onclick = function() { return sort_category(this, 'top'); };
+        }
+        else {
+            imgElm1.onclick = function() { return sort_category(this, 'down'); };
+            imgElm2.onclick = function() { return sort_category(this, 'bottom'); };
+        }
+//        alert('id = ' + imgElm1.id + ', src = ' + imgElm1.src);
+    }
+    else {
+        imgElm1.src = imgElm1.src.replace(/(.*)\/(.*?)\.gif$/, "$1/$2_d.gif");
+        imgElm2.src = imgElm2.src.replace(/(.*)\/(.*?)\.gif$/, "$1/$2_d.gif");
+        imgElm1.className = 'sort-icon-d';
+        imgElm2.className = 'sort-icon-d';
+        imgElm1.onclick = function() {};
+        imgElm2.onclick = function() {};
+//        alert('id = ' + imgElm1.id + ', src = ' + imgElm1.src);
+    }
+}
+
+var cat_sort_order;
+
+function save_cat_list(frm) {
+    var root = document.getElementById("category_root");
+    var params = new Array();
+    cat_sort_order = 1;
+    create_cat_list(root, params);
+//    alert(params.join('&'));
+//    url = "<mt:var name="script_url">?__mode=save&" + params.join('&');
+//    alert(url);
+//    location.href = "<mt:var name="mt_url">?__mode=<mt:var name="next_mode">&blog_id=<mt:var name="blog_id">&" + params.join('&');
+    for (var i = 0; i < params.length; i++) {
+        var elm = document.createElement('input');
+        elm.type = 'hidden';
+        elm.name = params[i].id;
+        elm.value = params[i].order;
+        frm.appendChild(elm);
+    }
+    var msg = '';
+    for (var i = 0; i < frm.elements.length; i++) {
+        msg += 'name = ' + frm.elements[i].name;
+        msg += 'value = ' + frm.elements[i].value + '\n';
+    }
+//    alert(msg);
+    frm.submit();
+    return false;
+}
+
+function create_cat_list(parent, params) {
+    var childs = parent.childNodes;
+    for (var i = 0; i < childs.length; i++) {
+        if (childs[i].nodeName == 'LI') {
+//            alert('id = ' + childs[i].id + ', order = ' + cat_sort_order);
+            params.push({ id : childs[i].id, order : cat_sort_order });
+            cat_sort_order++;
+            for (var j = 0; j < childs[i].childNodes.length; j++) {
+                if (childs[i].childNodes[j].nodeName == 'UL') {
+                    create_cat_list(childs[i].childNodes[j], params);
+                }
+            }
+        }
+    }
+}
+//]]>
+</script>
+</mt:if>
+
+<mt:if name="saved">
+<div id="saved-changes" class="msg msg-success"><a href="javascript:void(0)" onclick="javascript:hide('saved-changes');" class="close-me"><span>close</span></a><__trans phrase="Saved information of [_1] sort order." params="<mt:var name="sort_obj">"><br />
+<a href="#" onclick="window.open('<mt:var name="mt_url">?__mode=rebuild_confirm&amp;blog_id=<mt:var name="blog_id">', 'rebuild', 'width=400,height=300,resizable=yes');"><__trans phrase="Rebuild blog."></a>
+</div>
+</mt:if>
+
+<p><a href="<mt:var name="mt_url">?__mode=list_cat<mt:if name="folder_mode">&amp;_type=folder</mt:if>&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Return to manage [_1]" params="<mt:var name="sort_obj">"></a></p>
+
+<mt:if name="sort_html">
+<form name="save_top" method="post" action="<mt:var name="mt_url">" onsubmit="return save_cat_list(this);">
+<mt:include name="include/actions_bar.tmpl" bar_position="top" hide_pager="1">
+<input type="hidden" name="__mode" value="<mt:var name="next_mode">" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+</form>
+
+<div class="listing">
+<mt:var name="sort_html">
+</div><!-- /listing -->
+
+<form name="save_bottom" method="post" action="<mt:var name="mt_url">" onsubmit="return save_cat_list(this);">
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
+<input type="hidden" name="__mode" value="<mt:var name="next_mode">" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+</form>
+<mt:else>
+<div id="zero-state" class="msg msg-info zero-state"><a href="javascript:void(0)" onclick="javascript:hide('zero-state');return false;" class="close-me"><span>close</span></a>
+    <mt:var name="not_found">
+</div>
+</mt:if>
+<mt:include name="include/footer.tmpl">
