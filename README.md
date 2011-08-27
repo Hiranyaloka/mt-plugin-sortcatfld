@@ -8,9 +8,7 @@ SortCatFld for Melody is an adaption of Hajime Fujimoto's excellent SortCatFld p
 - [Author Link](http://www.h-fj.com/blog/)
 - [Documentation Link](http://www.h-fj.com/blog/mtplgdoc/sortcatfld.php)
 
-## Licenses
-
-This plugin will provide you with a dual license as follows.
+Licenses - This plugin will provide you with a dual license as follows.
 
 When combined with the MT 5-1 commercial license license / personal:
 - You can safely modify and redistribute freely made.  However, if you want to redistribute and modify, the original credits, please remain.
