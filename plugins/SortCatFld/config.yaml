@@ -1,0 +1,39 @@
+id: 'SortCatFld'
+key: 'SortCatFld'
+name: 'Sort Categories And Folders for Melody'
+description: 'Sort categories and folders as you like.'
+author_name: 'Hajime Fujimoto (adapted for Melody by Rick Bychowski)'
+author_link: http://www.h-fj.com/blog/
+version: 1.021
+schema_version: 1.011
+static_version: 1
+l10n_class: 'SortCatFld::L10N'
+
+object_types:
+  category:
+    order_number: integer
+
+callbacks:
+  MT::App::CMS::template_param.list_category: $SortCatFld::SortCatFld::Plugin::sort_categories_catlist
+  MT::App::CMS::template_param.list_folder: $SortCatFld::SortCatFld::Plugin::sort_categories_catlist
+  MT::App::CMS::template_param.edit_entry: $SortCatFld::SortCatFld::Plugin::sort_categories_entry
+  MT::Category::pre_save:
+    priority: 1
+    code: $SortCatFld::SortCatFld::Plugin::category_pre_save
+  MT::Folder::pre_save:
+    priority: 1
+    code: $SortCatFld::SortCatFld::Plugin::folder_pre_save
+
+applications:
+  cms:
+    methods:
+      sort_cat_setting: $SortCatFld::SortCatFld::Plugin::sort_categories_setting
+      sort_fld_setting: $SortCatFld::SortCatFld::Plugin::sort_categories_setting
+      sort_cat_save: $SortCatFld::SortCatFld::Plugin::sort_categories_save
+      sort_fld_save: $SortCatFld::SortCatFld::Plugin::sort_categories_save
+
+upgrade_functions:
+  init_order_number:
+    version_limit: 1.011
+    code: $SortCatFld::SortCatFld::Plugin::init_order_number
+

@@ -1,75 +1,10 @@
-#
-# SortCatFld.pl
-# 2007/08/26 1.00 For Movable Type 4
-# 2007/09/07 1.01 Bug fix
-# 2008/01/25 1.02 For Movable Type 4.1 / MTOS
-#
-# Copyright(c) by H.Fujimoto
-#
-package MT::Plugin::SortCatFld;
-use base 'MT::Plugin';
-
+package SortCatFld::Plugin;
 use strict;
 
-use MT;
-use MT::Plugin;
+use ConfigAssistant::Util
+    qw( plugin_static_web_path plugin_static_file_path);
 
-my $plugin = MT::Plugin::SortCatFld->new({
-    name => 'Sort Categories And Folders',
-    version => '1.02',
-    author_name => '<__trans phrase="Hajime Fujimoto">',
-    author_link => 'http://www.h-fj.com/blog/',
-    doc_link => 'http://www.h-fj.com/blog/mtplgdoc/sortcatfld.php',
-    description => '<__trans phrase="Sort categories and folders as you like.">',
-    blog_config_template => \&blog_config,
-    schema_version => '1.01',
-    l10n_class => 'SortCatFld::L10N',
-});
-
-MT->add_plugin($plugin);
-
-sub init_registry {
-    my $plugin = shift;
-    $plugin->registry({
-        object_types => {
-            'category' => {
-                'order_number' => 'integer',
-            },
-        },
-        callbacks => {
-            'MT::App::CMS::template_param.list_category'
-                => \&sort_categories_catlist,
-            'MT::App::CMS::template_param.list_folder'
-                => \&sort_categories_catlist,
-            'MT::App::CMS::template_param.edit_entry'
-                => \&sort_categories_entry,
-            'MT::Category::pre_save' => {
-                priority => 1,
-                code => \&category_pre_save,
-            },
-            'MT::Folder::pre_save' => {
-                priority => 1,
-                code => \&folder_pre_save,
-            },
-        },
-        applications => {
-            'cms' => {
-                'methods' => {
-                    'sort_cat_setting' => \&sort_categories_setting,
-                    'sort_fld_setting' => \&sort_categories_setting,
-                    'sort_cat_save' => \&sort_categories_save,
-                    'sort_fld_save' => \&sort_categories_save,
-                },
-            },
-        },
-        upgrade_functions => {
-            'init_order_number' => {
-                version_limit => '1.01',
-                code => \&init_order_number
-            },
-        },
-    });
-}
+my $plugin = MT->component('SortCatFld');
 
 sub init_order_number {
     my $app = MT->instance;
@@ -151,7 +86,7 @@ sub sort_categories_catlist {
             $msg = $plugin->translate('Sort categories');
             $mode = "cat";
         }
-        my $css_url = $param->{static_uri} . 'plugins/SortCatFld/css/styles.css';
+        my $css_url = plugin_static_web_path( $plugin ) . "css/styles.css";
         my $url = $param->{script_url} . "?__mode=sort_${mode}_setting&blog_id=" . $param->{blog_id};
         $param->{html_head} .= <<HERE;
     <link rel="stylesheet" href="$css_url" />
@@ -294,7 +229,7 @@ sub sort_categories_setting {
 
 sub _build_category_tree {
     my ($app, $obj_class, $parent, $level, $html) = @_;
-
+    
     my $blog_id = $app->{query}->param('blog_id');
 
     my @cats = $obj_class->load({ blog_id => $blog_id, parent => $parent },
@@ -320,7 +255,7 @@ sub _build_category_tree {
 
     my $sp1 = '';
     $sp1 = '  ' x ($level + 1);
-    my $btn_path = $app->static_path . "plugins/SortCatFld/images/";
+    my $btn_path = plugin_static_web_path( $plugin ) . "images/";
     my $up_phrase = $plugin->translate('Up');
     my $down_phrase = $plugin->translate('Down');
     my $top_phrase = $plugin->translate('Top');
