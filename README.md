@@ -1,5 +1,8 @@
 # SortCatFld plugin for MT4 v1.02
 
+SortCatFld for Melody is an adaption of Hajime Fujimoto's excellent SortCatFld plugin for Movable Type 4. The plugin was restructured for Melody. It will also work with Movable Type 4 with the ConfigAssistant plugin.
+
+## Original Author and License
 - Author: Hajime Fujimoto
 - Description: Sort categories and folders as you like.
 - [Author Link](http://www.h-fj.com/blog/)
